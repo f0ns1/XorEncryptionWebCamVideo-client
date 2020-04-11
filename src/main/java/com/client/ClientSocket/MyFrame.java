@@ -38,7 +38,7 @@ public class MyFrame extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		new MyThread().start();
-		Socket socket = null;
+		Socket socket = new Socket();
 		String ip = "127.0.0.1";
 		int port = 8989;
 		boolean calling = true;

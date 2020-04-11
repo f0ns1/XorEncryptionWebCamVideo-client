@@ -10,9 +10,19 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.security.InvalidKeyException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Vector;
 
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 import javax.imageio.ImageIO;
+
+import org.apache.commons.codec.binary.Hex;
 
 import com.socket.frame.Frame;
 
@@ -34,11 +44,8 @@ public class VideoClientThread extends Thread {
 
 	public void run() {
 		try {
-			//SocketAddress proxyAddr = new InetSocketAddress("127.0.0.1", 8080);
-			//Proxy proxy = new Proxy(Proxy.Type.HTTP, proxyAddr);
-			socket = new Socket();
 			socket.setSoTimeout(5000);
-			socket.connect(new InetSocketAddress(ip,port));
+			socket.connect(new InetSocketAddress(ip, port));
 			ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
 			Frame f;
 			BufferedImage bufferedImage = null;
@@ -46,13 +53,10 @@ public class VideoClientThread extends Thread {
 				try {
 					ByteArrayOutputStream fbaos = new ByteArrayOutputStream();
 					bufferedImage = videoCap.getOneFrame();
-					
-					ImageIO.write(xorEncryption(bufferedImage), formatType, fbaos);
-					
-					oos.writeObject(new Frame(fbaos.toByteArray()));
+					ImageIO.write(bufferedImage, formatType, fbaos);
+					oos.writeObject(new Frame(encrypt(fbaos.toByteArray())));
 					oos.flush();
 					bufferedImage.flush();
-					// Thread.sleep(33);
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.out.println(e.getMessage());
@@ -65,25 +69,37 @@ public class VideoClientThread extends Thread {
 
 	}
 
-	public BufferedImage xorEncryption(BufferedImage bufferedImage) {
-		    String image = bufferedImage.toString();
-		 	System.out.println("image : "+image);
-		    System.out.println("data: "+bufferedImage.getData());
-		    System.out.println("source: "+bufferedImage.getSource());
-		    System.out.println("whth: "+bufferedImage.getWidth());
-		    System.out.println("hegth: "+bufferedImage.getHeight());
-		    System.out.println("1,1: "+bufferedImage.getRGB(1, 1));
-		    for(int x =0 ; x < bufferedImage.getWidth(); x++) {
-		    	for(int y=0; y<bufferedImage.getHeight(); y++) {
-		    		//System.out.println("position: ["+x+","+y+"] ="+bufferedImage.getRGB(x, y));
-		    		//int val =bufferedImage.getRGB(x, y);
-		    		//System.out.println("position: ["+x+","+y+"] ="+val);
-		    		//int resp = val ^ 1111111;
-		    		//System.out.println("position: ["+x+","+y+"] ="+resp);
-		    		bufferedImage.setRGB(x, y, bufferedImage.getRGB(x, y)^ 1010101);
-		    	}
-		    }
+	//Usign xor encryption
+	public BufferedImage xorEncryption(BufferedImage bufferedImage)
+			throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+		
+		for (int x = 0; x < bufferedImage.getWidth(); x++) {
+			for (int y = 0; y < bufferedImage.getHeight(); y++) {
+				bufferedImage.setRGB(x, y, bufferedImage.getRGB(x, y)^ 010101);
+			}
+		}
 		return bufferedImage;
 	}
+
+	//Using AES encryption
+	private String encrypt(byte[] img) {
+		byte[] out = null;
+		try {
+			byte[] key = "MyPrivateKeyFroEncryption".getBytes();
+			MessageDigest sha = MessageDigest.getInstance("SHA-1");
+			key = sha.digest(key);
+			key = Arrays.copyOf(key, 16);
+			SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
+			Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+			cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+			out = cipher.doFinal(img);
+		} catch (Exception e) {
+			System.out.println("Error while encrypting: " + e.toString());
+		}
+		return Base64.getEncoder().encodeToString(out);
+		
+	}
+	
+
 
 }
