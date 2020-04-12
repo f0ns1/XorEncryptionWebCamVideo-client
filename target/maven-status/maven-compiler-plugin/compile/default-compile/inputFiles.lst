@@ -1,2 +1,5 @@
-/home/fonsi/serversocket/ClientSocket/src/main/java/com/client/ClientSocket/App.java
-/home/fonsi/serversocket/ClientSocket/src/main/java/com/client/ClientSocket/VideoClientThread.java
+/home/fonsi/serversocket/ClientSocket2/src/main/java/com/client/ClientSocket/MyFrame.java
+/home/fonsi/serversocket/ClientSocket2/src/main/java/com/client/ClientSocket/VideoCap.java
+/home/fonsi/serversocket/ClientSocket2/src/main/java/com/client/ClientSocket/VideoClientThread.java
+/home/fonsi/serversocket/ClientSocket2/src/main/java/com/socket/frame/Frame.java
+/home/fonsi/serversocket/ClientSocket2/src/main/java/com/client/ClientSocket/Mat2Image.java
