@@ -24,6 +24,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Hex;
 
+import com.client.ClientSocket.actions.VideoCap;
 import com.socket.frame.Frame;
 
 public class VideoClientThread extends Thread {

@@ -1,15 +1,18 @@
-package com.client.ClientSocket;
+package com.client.ClientSocket.actions;
 
 import org.opencv.core.Core;
 import org.opencv.videoio.VideoCapture;
+
+
 
 import java.awt.image.BufferedImage;
 
 public class VideoCap {
 
-    static{
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-    }
+	 static{
+	    	nu.pattern.OpenCV.loadShared();
+	        //System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+	}
 
     public VideoCapture cap;
     public Mat2Image mat2Img = new Mat2Image();
@@ -19,7 +22,7 @@ public class VideoCap {
         cap.open(0);
     }
 
-    BufferedImage getOneFrame() {
+    public BufferedImage getOneFrame() {
         cap.read(mat2Img.mat);
         return mat2Img.getImage(mat2Img.mat);
     }

@@ -1,4 +1,4 @@
-package com.client.ClientSocket;
+package com.client.ClientSocket.actions;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -14,7 +14,7 @@ public class Mat2Image {
         //System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
-    Mat mat = new Mat();
+    public Mat mat = new Mat();
     BufferedImage img;
 
     public Mat2Image() {
